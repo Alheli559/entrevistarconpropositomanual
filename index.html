@@ -831,8 +831,8 @@ body.deck-is-transitioning .route-story-scene{transition:none!important;}
 .route-story-count{position:absolute;top:28px;right:34px;z-index:5;font:700 16px 'Poppins',sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.35);}
 .route-story-preview{position:absolute;right:0;top:0;bottom:112px;width:17%;z-index:4;background:rgba(5,22,38,.66);border-left:2px solid rgba(255,255,255,.76);clip-path:polygon(25% 0,100% 0,100% 100%,0 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px 16px 30px 48px;text-align:center;}
 .route-story-preview strong{font-size:14px;text-transform:uppercase;line-height:1.2;}.route-story-preview span{font-size:11px;color:rgba(255,255,255,.72);margin-top:8px;}
-.route-story-preview button{width:48px;height:48px;border-radius:50%;background:rgba(5,22,38,.84);color:#fff;font-size:22px;margin-top:18px;border:1px solid rgba(255,255,255,.25);}
-.route-story-preview button:hover{background:var(--turq);color:var(--navy);}
+/* El boton de flecha de este panel se elimino (ver render() del recorrido), asi
+   que sus estilos ya no aplican y se quitan para no dejar CSS muerto. */
 .route-story-nav{position:absolute;left:0;right:0;bottom:0;z-index:6;height:112px;background:rgba(4,20,36,.96);display:flex;align-items:center;padding:14px 4.5%;gap:12px;border-top:1px solid rgba(255,255,255,.15);}
 .route-story-arrow{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.45);color:#fff;flex:0 0 auto;font-size:20px;}.route-story-arrow:hover:not(:disabled){background:var(--turq);color:var(--navy);border-color:var(--turq);}.route-story-arrow:disabled{opacity:.25;cursor:not-allowed;}
 .route-story-tabs{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;flex:1;min-width:0;}
@@ -3333,7 +3333,12 @@ menuBackdrop.addEventListener('click', closeMenu);
     scenes.forEach(function(scene,i){ var active=i===current; scene.classList.toggle('is-active',active); scene.setAttribute('aria-hidden',active?'false':'true'); });
     tabButtons.forEach(function(tab,i){ var active=i===current; tab.classList.toggle('is-active',active); tab.classList.toggle('is-reviewed',!!reviewed[i]); tab.setAttribute('aria-selected',active?'true':'false'); tab.setAttribute('tabindex',active?'0':'-1'); });
     count.textContent=String(current+1).padStart(2,'0')+' / '+String(ROUTE.length).padStart(2,'0'); prev.disabled=current===0; next.disabled=current===ROUTE.length-1;
-    if(current<ROUTE.length-1){ preview.innerHTML='<strong>'+String(current+2).padStart(2,'0')+' · '+esc(ROUTE[current+1].titulo)+'</strong><button type="button" aria-label="Ir a '+esc(ROUTE[current+1].titulo)+'">→</button><span>Desliza o usa las flechas</span>'; preview.querySelector('button').addEventListener('click',function(e){e.stopPropagation();goTo(current+1);}); }
+    /* Sin boton de flecha en el panel de avance: el propio texto ya indica como
+       pasar de etapa ("Desliza o usa las flechas") y estan las flechas del
+       carrusel y los tabs de abajo. Al quitar el <button> se quita tambien su
+       addEventListener: querySelector('button') devolveria null y romperia
+       render() en cada cambio de escena. */
+    if(current<ROUTE.length-1){ preview.innerHTML='<strong>'+String(current+2).padStart(2,'0')+' · '+esc(ROUTE[current+1].titulo)+'</strong><span>Desliza o usa las flechas</span>'; }
     else preview.innerHTML='<strong>✓ Recorrido completado</strong><span>Has revisado las ocho etapas</span>';
     announcer.textContent='Etapa '+(current+1)+' de '+ROUTE.length+': '+ROUTE[current].titulo; saveLS('friopacking_route_current',current);
     if(!immediate && tabButtons[current].scrollIntoView) tabButtons[current].scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'nearest',inline:'center'});
