@@ -294,15 +294,27 @@ img{max-width:100%; display:block;}
 /* La relacion de aspecto (7/5 = 1.4) es el promedio real de los 4 PNG (1.33 a 1.44):
    con object-fit:contain asi ninguno queda con franjas grandes sin usar dentro del box. */
 .gen-head-right{
-  flex:0 0 44%; max-width:520px; position:relative; aspect-ratio:7/5; overflow:hidden; align-self:center;
-  /* En pantallas bajas el box se recorta en alto (contain reescala la foto sin
-     deformarla) para que la diapositiva no genere scroll. */
-  max-height:44vh;
+  /* ANCHO: no se usa un % porque cualquier porcentaje fijo aprieta la columna de
+     texto en pantallas medianas y los pills (que piden 591px) se parten en dos
+     lineas. Se calcula dejando siempre ~620px al texto: el ancho interior es
+     ~92vw (100vw menos los dos gutters), asi que la foto toma lo que queda.
+     Da ~771px a 1512, 558px a 1280 y 393px a 1101, y nunca parte los pills. */
+  flex:0 0 auto; width:clamp(280px, calc(92vw - 620px), 800px);
+  position:relative; aspect-ratio:7/5; overflow:hidden; align-self:center;
+  /* ALTO: el alto de esta fila lo define la foto, y la lista va DESPUES, asi que
+     cada pixel de foto empuja la lista hacia abajo. Se limita a 380px para que
+     la lista suba; el calc lo recorta antes en pantallas bajas.
+     contain reescala la foto sin deformarla cuando el box se recorta. */
+  max-height:clamp(180px, calc(100vh - 430px), 380px);
 }
 /* Las fotos son recortes con fondo transparente (sin recuadro): el degradado real
    de la seccion se ve directamente detras de cada persona, sin veto ni caja visible. */
+/* object-fit:fill (no contain) para que la foto LLENE la caja completa: con
+   contain se mantenia la proporcion del PNG (1.35) y quedaban franjas vacias a
+   los lados, porque el alto es el que manda. Con fill se estira, que es lo
+   aceptado explicitamente. object-position no aplica con fill. */
 .gen-photo-img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:right top;
+  position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
@@ -324,17 +336,48 @@ img{max-width:100%; display:block;}
 }
 
 /* ---------- Generaciones: lista editorial (sin tarjetas, sin acordeon) ---------- */
-.gen-list{margin-top:6px; border-top:1px solid rgba(11,41,71,.14);}
-.gen-row{border-bottom:1px solid rgba(11,41,71,.14);}
+/* Sin lineas divisorias: con la lista a todo el ancho los bordes hacian que se
+   leyera como una tabla estirada y acentuaban la sensacion de separacion. */
+.gen-list{margin-top:6px;}
+.gen-row{border-bottom:0;}
+
+/* ---------- #generaciones a todo el ancho y alto de la vista ----------
+   El contenedor estaba topado en 1180px (350px vacios a los lados) y el
+   contenido ocupaba 608 de los 791px de alto. Se libera el ancho con el mismo
+   gutter que el hero y el alto sobrante se reparte entre las cuatro filas.
+
+   Los paneles de generacion son .tab-panel y se alternan con display:none mas
+   la clase .active (no con el atributo hidden), asi que el estirado se aplica
+   SOLO a .tab-panel.active: tocar los ocultos les daria altura y romperia el
+   alternado. Las filas usan flex-basis auto y sin min-height:0, para que solo
+   CREZCAN con el sobrante y nunca se encojan por debajo de su contenido.
+
+   El gutter es clamp y no max(): con max(4vw,48px) el suelo de 48px se comia
+   96px de una pantalla de 375px y apretaba el texto. Con clamp baja a los 24px
+   que usa el resto del sitio en movil y crece hasta 72px en escritorio. */
+#generaciones > .container{max-width:none; padding:0 clamp(24px,4vw,72px);}
+
+/* Las filas YA NO se estiran para llenar el alto: repartir el sobrante entre
+   ellas las separaba y ademas empujaba la lista hacia abajo. Ahora la lista
+   conserva su alto natural y queda justo debajo del encabezado, es decir mas
+   arriba, y el espacio que sobra se va al pie de la vista.
+
+   El contenedor SI mantiene height:100%: la seccion centra su contenido con
+   align-items:center, asi que sin esto el bloque entero se centraba y la lista
+   terminaba mas abajo que antes en lugar de subir. Con el alto completo el
+   contenido queda anclado arriba y el sobrante cae al pie. */
+@media (min-width:701px){
+  html.deck-mode #generaciones > .container{display:flex; flex-direction:column; height:100%;}
+}
 .gen-row-content{
-  display:grid; grid-template-columns:52px 190px 1fr; grid-template-areas:"num title summary";
-  column-gap:20px; align-items:center; width:100%; padding:15px 2px;
+  display:grid; grid-template-columns:58px 220px 1fr; grid-template-areas:"num title summary";
+  column-gap:22px; align-items:center; width:100%; padding:15px 2px;
 }
-.gen-row-num{grid-area:num; font-family:'Poppins',sans-serif; font-size:20px; font-weight:800; color:rgba(11,41,71,.28);}
+.gen-row-num{grid-area:num; font-family:'Poppins',sans-serif; font-size:23px; font-weight:800; color:rgba(11,41,71,.28);}
 .gen-row-title{
-  grid-area:title; font-family:'Poppins',sans-serif; font-size:15.5px; font-weight:800; color:var(--navy); min-width:0;
+  grid-area:title; font-family:'Poppins',sans-serif; font-size:17.5px; font-weight:800; color:var(--navy); min-width:0;
 }
-.gen-row-summary{grid-area:summary; font-size:14px; line-height:1.55; color:var(--text-soft); min-width:0;}
+.gen-row-summary{grid-area:summary; font-size:16px; line-height:1.5; color:var(--text-soft); min-width:0;}
 .gen-kw{background:var(--turq-soft); color:var(--turq-dark); padding:1px 6px; border-radius:5px;}
 .tab-btn-ico{display:inline-flex; width:16px; height:16px; vertical-align:-3px; margin-right:6px;}
 .tab-btn-ico svg{width:100%; height:100%; display:block;}
@@ -426,10 +469,12 @@ img{max-width:100%; display:block;}
   display:inline-flex; gap:6px; align-items:center; background:rgba(255,255,255,0.12); color:var(--turq);
   font-weight:700; font-size:12.5px; letter-spacing:.5px; text-transform:uppercase; padding:6px 14px; border-radius:999px; margin-bottom:16px;
 }
-.hero h1{color:#fff; font-size:clamp(34px,5.8vw,64px); font-weight:800; max-width:640px; line-height:1.08; margin:0 0 20px;}
+.hero h1{color:#fff; font-size:clamp(38px,6.9vw,84px); font-weight:800; max-width:860px; line-height:1.05; margin:0 0 22px;}
 .hero h1 .accent{color:var(--turq);}
 .hero p.lead{color:rgba(255,255,255,0.85); font-size:17px; max-width:480px;}
-.hero p.lead-sub{color:rgba(255,255,255,0.7); font-size:14px; max-width:480px; margin-top:0; line-height:1.55;}
+/* El subtitulo acompana el tamano del titulo: con 14px fijos quedaba diminuto
+   frente a un h1 de hasta 80px. Sube tambien la opacidad para que se lea. */
+.hero p.lead-sub{color:rgba(255,255,255,0.82); font-size:clamp(15px,1.3vw,20px); max-width:680px; margin-top:0; line-height:1.5;}
 .hero .btn-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:24px;}
 
 /* Buttons */
@@ -1590,7 +1635,11 @@ html.deck-mode .deck-track > .slide{position:absolute !important; inset:0 !impor
 .slide .container{width:100%;}
 .slide-inner-wrap{min-height:100%; display:flex; flex-direction:column; justify-content:center; padding:clamp(18px,3.2vh,44px) 0;}
 .hero-slide{padding:0; display:flex; flex-direction:column; height:100%;}
-.hero-slide .hero{flex:1 1 auto; min-height:0; display:flex; align-items:center; padding:clamp(52px,8vh,96px) 0 clamp(18px,3vh,28px);}
+/* El contenido va centrado en el alto del hero, asi que para subirlo se agranda
+   el padding INFERIOR: el centrado se desplaza hacia arriba la mitad de lo que
+   crece. En vh para que en pantallas bajas se recorte solo y no empuje el bloque
+   fuera de vista (align-items:safe center lo protege igual, mas abajo). */
+.hero-slide .hero{flex:1 1 auto; min-height:0; display:flex; align-items:center; padding:clamp(52px,8vh,96px) 0 clamp(40px,15vh,160px);}
 /* El hero se libera del contenedor centrado (max-width 1180px) para que el texto
    quede pegado al borde izquierdo, con el mismo inset que usa la ruta de la entrevista. */
 .hero-slide .hero .container.hero-content{width:100%; max-width:none; margin:0; padding-left:max(4vw,48px); padding-right:24px;}
