@@ -311,22 +311,17 @@ img{max-width:100%; display:block;}
 }
 /* Las fotos son recortes con fondo transparente (sin recuadro): el degradado real
    de la seccion se ve directamente detras de cada persona, sin veto ni caja visible. */
-/* object-fit:contain (no fill): los 4 PNG tienen proporciones distintas (1.33 a
-   1.44), asi que fill los estiraba en distinto grado cada uno y las personas se
-   veian ensanchadas. Con contain cada foto conserva su proporcion, y el box se
-   limita a 560px de ancho para que no queden franjas vacias.
-   object-position:right center pega la foto al borde derecho de la vista. */
+/* Las 4 fotos son ahora 1120x800, o sea la misma proporcion 7/5 de la caja y el
+   mismo tamano entre si: con contain llenan la caja exactamente, sin franjas
+   vacias y sin deformar a nadie. Ya no hace falta el clip-path que recortaba el
+   7% inferior de img012/img013: ese recorte tapaba una barra gris que traian los
+   PNG antiguos, y en estas fotos cortaria los zapatos. */
 .gen-photo-img{
   position:absolute; inset:0; width:100%; height:100%;
   object-fit:contain; object-position:right center;
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
-/* img012.png e img013.png traen una barra gris suelta de ~5px al fondo del PNG,
-   separada del contenido real por una franja transparente. Se recorta por CSS:
-   el contenido de esas dos fotos termina al 87% / 85%, asi que el 7% inferior
-   solo contiene ese artefacto. Las otras dos no lo tienen y no se tocan. */
-.gen-photo-img[data-index="0"], .gen-photo-img[data-index="1"]{clip-path:inset(0 0 7% 0);}
 @media (prefers-reduced-motion:reduce){.gen-photo-img{transition:none;}}
 @media (max-width:900px){.gen-head-right{flex-basis:42%;}}
 @media (max-width:700px){
