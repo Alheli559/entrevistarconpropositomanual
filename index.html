@@ -1920,6 +1920,21 @@ img, video, iframe{max-width:100%;}
    fullscreen real, el cromo de presentacion y las animaciones de entrada.
    ========================================================================== */
 
+/* Boton "Iniciar": vuelve a la primera vista. No lleva JS propio: el deck cablea
+   cualquier elemento con data-nav (navLinks = querySelectorAll('[data-nav]')) y
+   con href="#portada" resuelve el goTo al indice 0. Estilo contorneado para que
+   no compita con el boton turquesa de presentacion, que es la accion principal. */
+.start-btn{
+  display:inline-flex; align-items:center; white-space:nowrap; cursor:pointer;
+  font-family:'Inter',sans-serif; font-size:clamp(11px,.75vw,13px); font-weight:700; color:#fff;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  padding:8px 14px; border-radius:12px; flex-shrink:0;
+  transition:background .15s, border-color .15s, transform .15s;
+}
+.start-btn:hover{background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5); transform:translateY(-1px);}
+.start-btn:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+@media (max-width:1180px){ .start-btn{padding:8px 11px;} }
+
 /* Boton de entrada, dentro de .actions del header */
 .present-btn{
   display:inline-flex; align-items:center; gap:7px; white-space:nowrap; cursor:pointer;
@@ -2057,6 +2072,7 @@ html.presenting .slide.is-active [data-present-anim]{
       <a href="#cierre" data-nav>Cierre</a>
     </nav>
     <div class="actions">
+      <a href="#portada" data-nav class="start-btn" title="Volver al inicio" aria-label="Volver al inicio">Volver al inicio</a>
       <button type="button" class="present-btn" id="presentBtn" aria-label="Iniciar modo presentación">
         <span aria-hidden="true">▶</span><span class="present-btn-txt">Modo Presentación</span>
       </button>
