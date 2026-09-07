@@ -298,8 +298,10 @@ img{max-width:100%; display:block;}
      texto en pantallas medianas y los pills (que piden 591px) se parten en dos
      lineas. Se calcula dejando siempre ~620px al texto: el ancho interior es
      ~92vw (100vw menos los dos gutters), asi que la foto toma lo que queda.
-     Da ~771px a 1512, 558px a 1280 y 393px a 1101, y nunca parte los pills. */
-  flex:0 0 auto; width:clamp(280px, calc(92vw - 620px), 800px);
+     Da ~771px a 1512, 558px a 1280 y 393px a 1101, y nunca parte los pills.
+     El tope es 560px (no 800): con un box mas ancho que eso, y siendo el alto
+     el que manda, contain dejaba franjas vacias a los lados de la foto. */
+  flex:0 0 auto; width:clamp(280px, calc(92vw - 620px), 560px);
   position:relative; aspect-ratio:7/5; overflow:hidden; align-self:center;
   /* ALTO: el alto de esta fila lo define la foto, y la lista va DESPUES, asi que
      cada pixel de foto empuja la lista hacia abajo. Se limita a 380px para que
@@ -309,12 +311,14 @@ img{max-width:100%; display:block;}
 }
 /* Las fotos son recortes con fondo transparente (sin recuadro): el degradado real
    de la seccion se ve directamente detras de cada persona, sin veto ni caja visible. */
-/* object-fit:fill (no contain) para que la foto LLENE la caja completa: con
-   contain se mantenia la proporcion del PNG (1.35) y quedaban franjas vacias a
-   los lados, porque el alto es el que manda. Con fill se estira, que es lo
-   aceptado explicitamente. object-position no aplica con fill. */
+/* object-fit:contain (no fill): los 4 PNG tienen proporciones distintas (1.33 a
+   1.44), asi que fill los estiraba en distinto grado cada uno y las personas se
+   veian ensanchadas. Con contain cada foto conserva su proporcion, y el box se
+   limita a 560px de ancho para que no queden franjas vacias.
+   object-position:right center pega la foto al borde derecho de la vista. */
 .gen-photo-img{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:fill;
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:contain; object-position:right center;
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
@@ -2037,9 +2041,12 @@ html.presenting .deck-arrow:hover{opacity:1;}
    transform propio (descarta position:absolute/fixed y cualquier cosa que ya
    use transform, como .route-story-copy), asi la animacion no puede romper
    ningun posicionamiento existente. */
+/* Sin filter:blur en el arranque: desenfocaba las fotos al entrar a cada
+   diapositiva. Se conserva el desplazamiento + fundido, que dan la entrada
+   sin tocar la nitidez de las imagenes. */
 @keyframes presentIn{
-  from{opacity:0; transform:translateY(16px) scale(.985); filter:blur(5px);}
-  to{opacity:1; transform:none; filter:none;}
+  from{opacity:0; transform:translateY(16px) scale(.985);}
+  to{opacity:1; transform:none;}
 }
 html.presenting .slide.is-active [data-present-anim]{
   animation:presentIn .6s cubic-bezier(.22,1,.36,1) both;
