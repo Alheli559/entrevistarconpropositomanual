@@ -344,11 +344,20 @@ img{max-width:100%; display:block;}
 .gen-photo-img{
   position:absolute; inset:0; width:100%; height:100%;
   object-fit:contain; object-position:center center;
-  /* Baja la foto 60px. Va con transform y no con object-position porque en la
-     mayoria de anchos la foto ya ocupa TODO el alto de la caja (532x380 en una
-     caja 560x380): al no quedar holgura vertical, object-position no tendria
-     nada que desplazar. */
-  transform:translateY(60px);
+  /* Baja la foto 60px y la agranda un 20%. Va con transform y no tocando el
+     tamano de la caja por dos razones:
+     - Bajar: en la mayoria de anchos la foto ya ocupa TODO el alto de la caja
+       (501x358 en una caja 560x358), asi que sin holgura vertical
+       object-position no tendria nada que desplazar.
+     - Agrandar: subir el alto de la caja de 358 a 430 pide 72px que no hay
+       (solo quedan 28 libres al pie), asi que provocaria scroll. Con transform
+       la foto crece sin que el layout se entere y no desplaza nada.
+     transform-origin en la base (50% 100%): la foto crece HACIA ARRIBA, no
+     hacia abajo. Abajo esta la lista 01-04, mientras que arriba a la derecha no
+     hay nada (el titulo, subtitulo y pills van en la columna izquierda), asi que
+     ese es el unico lado por el que puede crecer sin pisar nada. */
+  transform-origin:50% 100%;
+  transform:translateY(60px) scale(1.2);
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
