@@ -288,6 +288,23 @@ img{max-width:100%; display:block;}
 .gen-head-left{flex:1; min-width:0; align-self:center;}
 /* El bloque de texto respira mas y se centra contra la foto: antes quedaba pegado
    arriba y dejaba ~145px muertos abajo. Cabe todo sin crecer el alto de la fila. */
+/* Titulo y subtitulo mas grandes, mismos tamanos que #sesgos para que la
+   tipografia sea coherente entre vistas. No mueve la lista 01-04: la altura de
+   la fila la fija la foto (450px con sus margenes a 1512x860), no esta columna
+   de texto (303px con el tipo ya crecido), asi que sobra holgura.
+   El max-width de 780 (el general es 640) evita que a 19px el subtitulo se
+   parta en 3 lineas dejando "persona." sola. La columna mide ~811px, asi que
+   cabe y no se acerca a la foto: el texto llega a x=820 y la foto empieza en 871.
+
+   Condicionado a min-height:780px. En pantallas mas bajas la foto se encoge
+   hasta su suelo de 180px y entonces manda la columna de texto: medido a
+   1291x670, el texto crecido la llevaba a 358px contra 272 de la foto, la fila
+   crecia y la vista se iba a 55px de scroll. Ahi se mantienen los tamanos
+   originales, que es preferible a que se desplace. */
+@media (min-height:780px){
+  #generaciones .section-title{font-size:clamp(28px,3.4vw,44px);}
+  #generaciones .section-intro{font-size:19px; max-width:780px;}
+}
 #generaciones .gen-head-left .kicker{margin-bottom:24px;}
 #generaciones .gen-head-left .section-title{margin-bottom:20px;}
 #generaciones .gen-head-left .section-head{margin-bottom:32px;}
