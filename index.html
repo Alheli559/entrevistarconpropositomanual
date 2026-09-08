@@ -360,6 +360,23 @@ img{max-width:100%; display:block;}
   transform:translateY(60px) scale(1.2);
   opacity:0; transition:opacity .35s ease;
 }
+/* BAJAR LA FOTO AL CORREDOR DE LA DERECHA.
+   A la derecha de la lista 01-04 queda una banda vacia: el texto de las filas no
+   pasa de x=808 y la foto empieza en x=871 (medido a 1512x860). La foto puede
+   bajar hasta ahi sin tapar ni una palabra, porque va con transform y no
+   participa en el layout, asi que no empuja la lista ni provoca scroll.
+   Condicionado a min-width:1500px porque ese corredor solo existe en pantallas
+   anchas: a 1366x800 la foto invadiria el texto 20px y a 1000x800, 157px. Por
+   debajo de ese ancho se queda en los 60px de antes. En movil la fila va en
+   columna (la foto queda ENCIMA de la lista, no al lado) y la regla tampoco
+   aplica, asi que ahi nada cambia.
+   La bajada se escala con la altura: los 220px completos desde 860px de alto y
+   bajando hasta 60 en ventanas mas bajas, donde la banda es mas corta. */
+@media (min-width:1500px){
+  .gen-photo-img{
+    transform:translateY(clamp(60px, calc(100vh - 640px), 220px)) scale(1.2);
+  }
+}
 .gen-photo-img.is-active{opacity:1;}
 @media (prefers-reduced-motion:reduce){.gen-photo-img{transition:none;}}
 @media (max-width:900px){.gen-head-right{flex-basis:42%;}}
