@@ -319,14 +319,18 @@ img{max-width:100%; display:block;}
 }
 /* Las fotos son recortes con fondo transparente (sin recuadro): el degradado real
    de la seccion se ve directamente detras de cada persona, sin veto ni caja visible. */
-/* Las 4 fotos son ahora 1120x800, o sea la misma proporcion 7/5 de la caja y el
-   mismo tamano entre si: con contain llenan la caja exactamente, sin franjas
-   vacias y sin deformar a nadie. Ya no hace falta el clip-path que recortaba el
-   7% inferior de img012/img013: ese recorte tapaba una barra gris que traian los
-   PNG antiguos, y en estas fotos cortaria los zapatos. */
+/* Las 4 fotos son 1120x800, la misma proporcion 7/5 de la caja y el mismo
+   tamano entre si. Ya no hace falta el clip-path que recortaba el 7% inferior
+   de img012/img013: ese recorte tapaba una barra gris que traian los PNG
+   antiguos, y en estas fotos cortaria los zapatos.
+   object-position CENTRADO (antes right center): cuando max-height recorta la
+   altura de la caja, su proporcion deja de ser 7/5 y contain ajusta la foto por
+   el alto, dejando holgura horizontal. Pegada a la derecha esa holgura se
+   acumulaba toda a la izquierda (269px de caja vacia a 1291x670, con la foto
+   arrimada al borde); centrada, la foto queda en medio de su columna. */
 .gen-photo-img{
   position:absolute; inset:0; width:100%; height:100%;
-  object-fit:contain; object-position:right center;
+  object-fit:contain; object-position:center center;
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
