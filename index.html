@@ -312,16 +312,15 @@ img{max-width:100%; display:block;}
      cada pixel de foto empuja la lista hacia abajo. Se limita a 380px para que
      la lista suba; el calc lo recorta antes en pantallas bajas.
      contain reescala la foto sin deformarla cuando el box se recorta.
-     El 482 descuenta los 32px de margin-top y los 20px de margin-bottom de
+     El 502 descuenta los 32px de margin-top y los 40px de margin-bottom de
      abajo, para que en pantallas bajas la foto siga cediendo el alto que hace
      falta y no desborde. */
-  max-height:clamp(180px, calc(100vh - 482px), 380px);
-  /* Reserva los 20px que la foto baja con translateY. Sin esto la foto, que
-     ahora sobresale de su caja, se metia dentro de la lista 01-04: medido -6px
-     a 1366x800 y -12px en movil. Con el margen, la fila crece 20px y la lista
-     baja con ella, asi que la foto baja respecto al texto y los pills (que es
-     lo pedido) sin invadir nada. */
-  margin-bottom:20px;
+  max-height:clamp(180px, calc(100vh - 502px), 380px);
+  /* Reserva los 40px que la foto baja con translateY. Sin esto la foto, que
+     sobresale de su caja, se mete dentro de la lista 01-04. Con el margen, la
+     fila crece 40px y la lista baja con ella, asi que la foto baja respecto al
+     texto y los pills (que es lo pedido) sin invadir nada. */
+  margin-bottom:40px;
   /* La foto baja 32px. Ese es el valor que reparte por igual el espacio libre
      de la vista: sin el, quedaban 34px sobre la foto y 98px bajo la lista, y la
      foto se veia pegada a la cabecera. Con 32 quedan 66 y 66.
@@ -343,11 +342,11 @@ img{max-width:100%; display:block;}
 .gen-photo-img{
   position:absolute; inset:0; width:100%; height:100%;
   object-fit:contain; object-position:center center;
-  /* Baja la foto 20px. Va con transform y no con object-position porque en la
+  /* Baja la foto 40px. Va con transform y no con object-position porque en la
      mayoria de anchos la foto ya ocupa TODO el alto de la caja (532x380 en una
      caja 560x380): al no quedar holgura vertical, object-position no tendria
      nada que desplazar. */
-  transform:translateY(20px);
+  transform:translateY(40px);
   opacity:0; transition:opacity .35s ease;
 }
 .gen-photo-img.is-active{opacity:1;}
