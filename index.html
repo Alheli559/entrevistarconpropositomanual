@@ -1246,20 +1246,27 @@ body.deck-is-transitioning .route-story-scene{transition:none!important;}
    a 34px (clamp(24px,3.4vw,34px)); aqui el tope sube a 44. */
 #sesgos .section-title{font-size:clamp(28px,3.4vw,44px);}
 #sesgos .section-intro{font-size:19px;}
-/* SUBIR EL BLOQUE. La cabecera no puede subir sola: .section centra su
-   contenido en vertical (align-items:safe center) y entre el subtitulo y las
-   tarjetas solo hay 12px, asi que no hay hueco que recortar. Se sube el bloque
-   entero anadiendo padding abajo: al estar centrado, cada 2px de padding
-   inferior lo desplazan 1px hacia arriba, o sea 80px -> sube 40px.
-   Medido antes: 126px libres arriba y 126px abajo; queda 86 / 166.
-   El umbral es min-height:800px (no 760): con el tipo mas grande el contenido
-   crecio ~20px y a 768px de alto los 80px extra provocaban 13px de scroll.
-   Ahi se renuncia al desplazamiento, que es preferible a que la vista se
-   desplace. El min-width evita aplicarlo en movil: alli la vista ya se
-   desplaza y el centrado no es el problema, asi que 80px extra solo serian
-   espacio muerto al final. */
+/* CENTRAR LAS TARJETAS EN LA VISTA.
+   .section centra su CONTENIDO completo (align-items:safe center), y ese
+   contenido tiene mucho mas peso arriba (cabecera de 165px) que abajo (los dots,
+   18px). Resultado: con el bloque centrado, las tarjetas quedan por debajo del
+   centro real de la vista. Medido a 1512x860: centro de la vista en y=464 y
+   centro de las tarjetas en y=499, o sea 35px bajas.
+   Se sube el conjunto 75px (los 40 que ya subia antes mas estos 35) y con eso el
+   centro de las tarjetas coincide con el de la vista.
+   Se hace con transform y NO con padding inferior como antes: el padding cuesta
+   2px de altura por cada 1px que sube, y a 75px de subida ya no cabia en la
+   diapositiva (790.8 de 792 disponibles, al borde del scroll). El transform no
+   consume altura, asi que el calculo de desbordamiento no cambia.
+   La subida NO es fija: se escala con la altura de la ventana. Con -75px fijos,
+   a 800px de alto el bloque quedaba a 5px de la barra superior. El clamp da los
+   75px completos desde ~860px de alto y se va a cero al bajar a 810, donde ya no
+   hay hueco que ceder, asi que nunca aprieta la cabecera contra la cabecera.
+   min-width excluye el movil, donde la vista se desplaza y centrar no aplica. */
 @media (min-width:981px) and (min-height:800px){
-  #sesgos{padding-bottom:calc(clamp(18px,4vh,56px) + 80px);}
+  #sesgos > .container{
+    transform:translateY(calc(-1 * clamp(0px, (100vh - 810px) * 1.5, 75px)));
+  }
 }
 .bias-row-wrap{position:relative; margin:8px -4px 18px;}
 #biasGrid{
