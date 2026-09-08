@@ -1217,22 +1217,28 @@ body.deck-is-transitioning .route-story-scene{transition:none!important;}
    Es el mismo color que ya mostraba el viewport, asi que el aspecto no cambia. */
 #sesgos{background:var(--gray-bg);}
 #sesgos > .container{max-width:1440px;}
-#sesgos .section-head{margin-bottom:10px;}
-/* Titulo y subtitulo un poco mas grandes que el resto de secciones. El titulo
-   base tope a 34px (clamp(24px,3.4vw,34px)); aqui el tope sube a 40. */
-#sesgos .section-title{font-size:clamp(26px,3.4vw,40px);}
-#sesgos .section-intro{font-size:17.5px;}
+/* 22px (antes 10) abre el hueco entre el texto y las tarjetas de 12px a 22px,
+   o sea las baja 10px. Se pone aqui y no como margin-top de .bias-row-wrap
+   porque los margenes de hermanos adyacentes se colapsan al mayor de los dos:
+   ese wrap ya trae margin-top:8px, asi que manda este. */
+#sesgos .section-head{margin-bottom:22px;}
+/* Titulo y subtitulo mas grandes que el resto de secciones. El titulo base tope
+   a 34px (clamp(24px,3.4vw,34px)); aqui el tope sube a 44. */
+#sesgos .section-title{font-size:clamp(28px,3.4vw,44px);}
+#sesgos .section-intro{font-size:19px;}
 /* SUBIR EL BLOQUE. La cabecera no puede subir sola: .section centra su
    contenido en vertical (align-items:safe center) y entre el subtitulo y las
    tarjetas solo hay 12px, asi que no hay hueco que recortar. Se sube el bloque
    entero anadiendo padding abajo: al estar centrado, cada 2px de padding
    inferior lo desplazan 1px hacia arriba, o sea 80px -> sube 40px.
    Medido antes: 126px libres arriba y 126px abajo; queda 86 / 166.
-   Va con min-height:760px para no robar altura en pantallas bajas, donde el
-   contenido ya va justo y solo conseguiria provocar scroll, y con min-width
-   para no aplicarlo en movil: alli la vista ya se desplaza y el centrado no es
-   el problema, asi que 80px extra solo serian espacio muerto al final. */
-@media (min-width:981px) and (min-height:760px){
+   El umbral es min-height:800px (no 760): con el tipo mas grande el contenido
+   crecio ~20px y a 768px de alto los 80px extra provocaban 13px de scroll.
+   Ahi se renuncia al desplazamiento, que es preferible a que la vista se
+   desplace. El min-width evita aplicarlo en movil: alli la vista ya se
+   desplaza y el centrado no es el problema, asi que 80px extra solo serian
+   espacio muerto al final. */
+@media (min-width:981px) and (min-height:800px){
   #sesgos{padding-bottom:calc(clamp(18px,4vh,56px) + 80px);}
 }
 .bias-row-wrap{position:relative; margin:8px -4px 18px;}
