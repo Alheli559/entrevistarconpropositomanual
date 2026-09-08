@@ -306,8 +306,16 @@ img{max-width:100%; display:block;}
   /* ALTO: el alto de esta fila lo define la foto, y la lista va DESPUES, asi que
      cada pixel de foto empuja la lista hacia abajo. Se limita a 380px para que
      la lista suba; el calc lo recorta antes en pantallas bajas.
-     contain reescala la foto sin deformarla cuando el box se recorta. */
-  max-height:clamp(180px, calc(100vh - 430px), 380px);
+     contain reescala la foto sin deformarla cuando el box se recorta.
+     El 462 (antes 430) descuenta los 32px del margin-top de abajo, para que en
+     pantallas bajas la foto siga cediendo el alto que hace falta y no desborde. */
+  max-height:clamp(180px, calc(100vh - 462px), 380px);
+  /* La foto baja 32px. Ese es el valor que reparte por igual el espacio libre
+     de la vista: sin el, quedaban 34px sobre la foto y 98px bajo la lista, y la
+     foto se veia pegada a la cabecera. Con 32 quedan 66 y 66.
+     Va como margin (no como position:relative) para que la fila crezca y la
+     lista baje con ella, en vez de que la foto se le monte encima. */
+  margin-top:32px;
 }
 /* Las fotos son recortes con fondo transparente (sin recuadro): el degradado real
    de la seccion se ve directamente detras de cada persona, sin veto ni caja visible. */
@@ -328,7 +336,9 @@ img{max-width:100%; display:block;}
   .gen-head-row{flex-direction:column; gap:8px;}
   /* En columna el eje cruzado es el horizontal: sin esto el texto se centraria. */
   .gen-head-left{align-self:stretch;}
-  .gen-head-right{width:100%; max-width:100%; aspect-ratio:730/500;}
+  /* En columna la foto va debajo del texto: el margin-top que la centra en
+     escritorio aqui solo abriria un hueco entre los dos. */
+  .gen-head-right{width:100%; max-width:100%; aspect-ratio:730/500; margin-top:0;}
   #generaciones .gen-head-left .kicker{margin-bottom:12px;}
   #generaciones .gen-head-left .section-title{margin-bottom:10px;}
   #generaciones .gen-head-left .section-head{margin-bottom:14px;}
