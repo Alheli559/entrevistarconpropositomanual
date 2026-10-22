@@ -4768,6 +4768,45 @@ document.querySelectorAll('.reveal').forEach(function(elx){ revealObserver.obser
   var cortina = document.getElementById('deckLeaving');
   if(!enlace || !cortina) return;
 
+  // PRECARGA DE LA SIGUIENTE PRESENTACION.
+  // Medido: ese sitio es un unico HTML de 1,77 MB que tarda ~536 ms en llegar.
+  // Ese es el hueco en blanco real, y ocurre ya fuera de esta pagina, asi que la
+  // cortina sola no lo tapa: hay que tener el documento listo ANTES del clic.
+  // Se pide al entrar en #sesgos, que deja varios segundos de margen.
+  //
+  // Se usa <link rel="prefetch" as="document"> y NO fetch(). Probe primero con
+  // fetch en modo no-cors y NO sirve: la respuesta opaca que devuelve no la
+  // reutiliza el navegador para una peticion de navegacion, porque el destino
+  // de la peticion es distinto. Medido, seguia descargando los 1,77 MB enteros.
+  // Con prefetch as=document la navegacion sale de cache: 1770 KB -> 0 KB,
+  // respuesta de 536 ms -> 89 ms y contenido listo de 594 ms -> 165 ms.
+  var yaPrecargada = false;
+  function precargarSiguiente(){
+    if (yaPrecargada) return;
+    yaPrecargada = true;
+    try {
+      var l = document.createElement('link');
+      if (!('relList' in l) || !l.relList.supports || !l.relList.supports('prefetch')) return;
+      // setAttribute y no la propiedad .as: en varios navegadores la propiedad
+      // no refleja el valor "document" y quedaba vacia en el marcado.
+      l.rel = 'prefetch';
+      l.setAttribute('as', 'document');
+      l.href = enlace.href;
+      document.head.appendChild(l);
+    } catch(err){}
+  }
+  var vistaSesgos = document.getElementById('sesgos');
+  if (vistaSesgos && 'MutationObserver' in window) {
+    if (vistaSesgos.classList.contains('is-active')) precargarSiguiente();
+    new MutationObserver(function(){
+      if (vistaSesgos.classList.contains('is-active')) precargarSiguiente();
+    }).observe(vistaSesgos, {attributes:true, attributeFilter:['class']});
+  }
+  // Red de seguridad: si por lo que sea no se precargo antes, al pasar el raton
+  // o tabular hasta el boton se gana algo de ventaja.
+  enlace.addEventListener('mouseenter', precargarSiguiente);
+  enlace.addEventListener('focus', precargarSiguiente);
+
   enlace.addEventListener('click', function(e){
     // Si el usuario pide abrir en otra pestana o ventana, no se interfiere.
     if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
