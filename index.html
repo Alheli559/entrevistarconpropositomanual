@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Adelanta DNS y handshake TLS con el sitio de la siguiente presentacion. El
+     enlace de #sesgos lleva alli, y resolver la conexion por adelantado recorta
+     el hueco en blanco entre una presentacion y otra. -->
+<link rel="dns-prefetch" href="https://alheli559.github.io">
+<link rel="preconnect" href="https://alheli559.github.io" crossorigin>
 <title>Entrevistar con Propósito | Grupo Friopacking</title>
 <meta name="description" content="Guía práctica para identificar talento, reducir sesgos y tomar mejores decisiones de contratación.">
 <style>
@@ -1320,6 +1325,31 @@ body.deck-is-transitioning .route-story-scene{transition:none!important;}
    derecho y si no se saldria de la pantalla. */
 .next-deck[data-tooltip]:hover::after, .next-deck[data-tooltip]:focus::after{
   left:auto; right:0; width:auto; white-space:nowrap;
+}
+/* ---------- Cortina de salida hacia la siguiente presentacion ---------- */
+/* Al navegar en la misma pestana el navegador descarga esta pagina y pinta
+   blanco hasta que la siguiente aparece: ese es el parpadeo. No se puede
+   eliminar, pero si taparlo. Se cubre la pantalla con el azul de la marca ANTES
+   de navegar, asi que lo que se ve es una transicion intencionada y no un
+   destello blanco. z-index muy alto para quedar tambien sobre el HUD del Modo
+   Presentacion. */
+.deck-leaving{
+  position:fixed; inset:0; z-index:99999;
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  background:linear-gradient(135deg, var(--navy) 0%, #0b2b45 60%, #09374f 100%);
+  color:#fff; font:600 15px 'Inter',sans-serif; letter-spacing:.01em;
+  opacity:0; transition:opacity .13s ease;
+}
+.deck-leaving[hidden]{display:none;}
+.deck-leaving.is-on{opacity:1;}
+.deck-leaving .deck-leaving-dot{
+  width:9px; height:9px; border-radius:50%; background:var(--turq);
+  animation:deckLeavingPulse 1s ease-in-out infinite;
+}
+@keyframes deckLeavingPulse{0%,100%{opacity:.35; transform:scale(.8);} 50%{opacity:1; transform:scale(1.15);}}
+@media (prefers-reduced-motion:reduce){
+  .deck-leaving{transition:none;}
+  .deck-leaving .deck-leaving-dot{animation:none; opacity:1;}
 }
 @media (prefers-reduced-motion:reduce){
   .next-deck{transition:none;}
@@ -4725,6 +4755,38 @@ document.querySelectorAll('.reveal').forEach(function(elx){ revealObserver.obser
   }
 
   syncHud();
+})();
+</script>
+<!-- Cortina que tapa el blanco al saltar a la siguiente presentacion -->
+<div class="deck-leaving" id="deckLeaving" hidden aria-hidden="true">
+  <span class="deck-leaving-dot"></span>
+  <span>Abriendo la siguiente presentación…</span>
+</div>
+<script>
+(function(){
+  var enlace  = document.querySelector('.next-deck');
+  var cortina = document.getElementById('deckLeaving');
+  if(!enlace || !cortina) return;
+
+  enlace.addEventListener('click', function(e){
+    // Si el usuario pide abrir en otra pestana o ventana, no se interfiere.
+    if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    cortina.hidden = false;
+    void cortina.offsetWidth;              // fuerza reflujo para que la transicion se vea
+    cortina.classList.add('is-on');
+    // Se navega con setTimeout y no con requestAnimationFrame: rAF no se dispara
+    // si la pestana esta en segundo plano, y la navegacion se quedaria colgada.
+    setTimeout(function(){ window.location.href = enlace.href; }, 170);
+  });
+
+  // Al volver con el boton atras, el navegador puede restaurar la pagina tal
+  // como quedo (bfcache) y la cortina seguiria puesta, dejando la vista azul y
+  // bloqueada. Se retira siempre que la pagina vuelve a mostrarse.
+  window.addEventListener('pageshow', function(){
+    cortina.classList.remove('is-on');
+    cortina.hidden = true;
+  });
 })();
 </script>
 </body>
