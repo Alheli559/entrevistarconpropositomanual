@@ -1291,6 +1291,40 @@ body.deck-is-transitioning .route-story-scene{transition:none!important;}
    a 34px (clamp(24px,3.4vw,34px)); aqui el tope sube a 44. */
 #sesgos .section-title{font-size:clamp(28px,3.4vw,44px);}
 #sesgos .section-intro{font-size:19px;}
+/* ---------- Enlace a la siguiente presentacion ---------- */
+/* Discreto a proposito, como se pidio: solo un icono, sin etiqueta visible y al
+   55% de opacidad; sube al 100% al pasar el raton o al recibir foco de teclado.
+   El texto vive en el aria-label (para lectores de pantalla) y en data-tooltip,
+   que reutiliza el tooltip que ya existe en el proyecto en vez de inventar uno.
+   Va en position:absolute sobre la seccion, no dentro del .container, por dos
+   motivos: no suma altura (el contenido de esta vista ya va justo y sumar ~44px
+   lo habria desequilibrado) y no descentra la fila de puntos del carrusel.
+   La esquina inferior derecha esta libre: las flechas del deck y el HUD del Modo
+   Presentacion se situan todos a media altura. */
+#sesgos{position:relative;}
+.next-deck{
+  position:absolute; right:clamp(16px,3vw,44px); bottom:clamp(16px,3.5vh,38px);
+  z-index:5; width:44px; height:44px; border-radius:50%;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.78); border:1px solid var(--gray-line);
+  color:var(--navy); opacity:.55; text-decoration:none;
+  transition:opacity .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.next-deck svg{width:20px; height:20px;}
+.next-deck:hover, .next-deck:focus-visible{
+  opacity:1; background:#fff; color:var(--turq); transform:translateY(-2px); box-shadow:var(--shadow-md);
+}
+.next-deck:focus-visible{outline:2px solid var(--turq); outline-offset:2px;}
+/* El tooltip del sistema se ancla a la izquierda y mide 220px fijos. Aqui se
+   ancla a la derecha y se ajusta al texto, porque el boton esta pegado al borde
+   derecho y si no se saldria de la pantalla. */
+.next-deck[data-tooltip]:hover::after, .next-deck[data-tooltip]:focus::after{
+  left:auto; right:0; width:auto; white-space:nowrap;
+}
+@media (prefers-reduced-motion:reduce){
+  .next-deck{transition:none;}
+  .next-deck:hover, .next-deck:focus-visible{transform:none;}
+}
 /* CENTRAR LAS TARJETAS EN LA VISTA.
    .section centra su CONTENIDO completo (align-items:safe center), y ese
    contenido tiene mucho mas peso arriba (cabecera de 165px) que abajo (los dots,
@@ -2547,6 +2581,11 @@ html.presenting .slide.is-active [data-present-anim]{
     </div>
     <div class="bias-row-dots" id="biasRowDots" aria-label="Navegación de sesgos"></div>
   </div>
+    <a class="next-deck" href="https://alheli559.github.io/labienvenida/"
+       data-tooltip="Siguiente presentación: La Bienvenida"
+       aria-label="Ir a la siguiente presentación: La Bienvenida">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
 </section>
 
 <!-- ============================= CASOS PRÁCTICOS ============================= -->
